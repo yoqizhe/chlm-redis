@@ -1,0 +1,59 @@
+name:    chlm-redis
+version: "0.0.0"
+
+dependencies:
+
+- base >=4.9.1.0 && <5
+- yesod >=1.6 && <1.7
+- yesod-core >=1.6 && <1.7
+- classy-prelude >=1.5 && <1.6
+- classy-prelude-conduit >=1.5 && <1.6
+- classy-prelude-yesod >=1.5 && <1.6
+- text >=0.11 && <2.0.3
+- yaml >=0.11 && <0.12
+- aeson >=1.4 && <2.2
+- monad-logger >=0.3 && <0.4
+- hedis
+- persistent-redis == 2.13.0.1
+
+# The library contains all of our application code. The executable
+# defined below is just a thin wrapper.
+library:
+  source-dirs: src
+  exposed-modules:
+  - ChlmRedis
+  when:
+  - condition: (flag(dev)) || (flag(library-only))
+    then:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O0
+      cpp-options: -DDEVELOPMENT
+    else:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O2
+
+# Test suite
+tests:
+  chlm-redis-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options: -Wall
+    dependencies:
+    - chlm-redis
+    - hspec >=2.0.0
+    - yesod-test
+
+# Define flags used by "yesod devel" to make compilation faster
+flags:
+  library-only:
+    description: Build for use with "yesod devel"
+    manual: false
+    default: false
+  dev:
+    description: Turn on development settings, like auto-reload templates.
+    manual: false
+    default: false
